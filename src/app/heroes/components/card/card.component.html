@@ -13,7 +13,7 @@
         <mat-chip
           *ngFor="let name of hero.characters.split(',') | slice : 0 : 3"
         >
-          {{ name }}
+          {{ name | titlecase }}
         </mat-chip>
       </mat-chip-listbox>
     </p>

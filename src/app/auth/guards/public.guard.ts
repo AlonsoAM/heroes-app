@@ -8,20 +8,21 @@ import {
   RouterStateSnapshot,
   UrlSegment,
 } from '@angular/router';
-import { Observable, tap } from 'rxjs';
+import { Observable, map, tap } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 
 @Injectable({
   providedIn: 'root',
 })
-export class AuthGuard implements CanActivate, CanMatch {
+export class PublicGuard implements CanActivate, CanMatch {
   constructor(private authService: AuthService, private router: Router) {}
 
   private checkAuthStatus(): Observable<boolean> | boolean {
     return this.authService.checkAuthentication().pipe(
       tap((isAuthenticated) => {
-        if (!isAuthenticated) this.router.navigate(['/auth']);
-      })
+        if (isAuthenticated) this.router.navigate(['./']);
+      }),
+      map((isAuthenticated) => !isAuthenticated)
     );
   }
 
@@ -29,16 +30,12 @@ export class AuthGuard implements CanActivate, CanMatch {
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Observable<boolean> | boolean {
-    // console.log('canActivate');
-    // console.log({ route, state });
     return this.checkAuthStatus();
   }
   canMatch(
     route: Route,
     segments: UrlSegment[]
   ): Observable<boolean> | boolean {
-    // console.log('CanMatch');
-    // console.log({ route, segments });
     return this.checkAuthStatus();
   }
 }
